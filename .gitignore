@@ -1,0 +1,55 @@
+# Project configuration files
+plan.md
+stuff.txt
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+*.err.log
+logs/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Go
+backend/backend
+backend/*.exe
+backend/*.exe~
+backend/*.dll
+backend/*.so
+backend/*.dylib
+backend/*.test
+backend/*.out
+
+# Python
+agents/.venv/
+agents/venv/
+agents/__pycache__/
+agents/*.py[cod]
+agents/*$py.class
+agents/.pytest_cache/
+agents/pip-log.txt
+agents/pip-delete-this-directory.txt
+
+# Node / Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.vercel/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/.env*.local
