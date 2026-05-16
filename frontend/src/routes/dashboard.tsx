@@ -120,7 +120,7 @@ function Dashboard() {
   return (
     <>
       <main
-        className="origin-top-left bg-background"
+        className="origin-top-left bg-background h-screen overflow-hidden"
         style={{
           transform: `scale(${zoom})`,
           width: `${100 / zoom}vw`,
