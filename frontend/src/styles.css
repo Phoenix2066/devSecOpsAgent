@@ -131,11 +131,13 @@
 
 /* ReactFlow theming overrides */
 .react-flow__background { background: var(--editor); }
-.react-flow__edge-path { stroke: var(--border); stroke-width: 1.5; }
+.react-flow__edge-path { stroke: var(--border); stroke-width: 2.5; }
 .react-flow__edge.animated .react-flow__edge-path {
   stroke: var(--primary);
-  stroke-dasharray: 5;
-  animation: flow-dash 0.8s linear infinite;
+  stroke-width: 3;
+  stroke-dasharray: 6 6;
+  animation: flow-dash 0.6s linear infinite;
+  filter: drop-shadow(0 0 4px var(--primary));
 }
 .react-flow__controls {
   background: var(--card);

@@ -1,4 +1,4 @@
-module anvil/backend
+module eitri/backend
 
 go 1.25.0
 

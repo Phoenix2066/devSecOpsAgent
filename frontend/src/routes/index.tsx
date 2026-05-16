@@ -8,9 +8,9 @@ import { ArrowUpRight, GitBranch, Zap, Layers, Workflow } from "lucide-react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Scope — Plan, Canvas, Ship" },
+      { title: "Eitri — Self-Healing Pipelines" },
       { name: "description", content: "A live pipeline canvas for shipping fast — built on TanStack Start, edge workers, and Supabase." },
-      { property: "og:title", content: "Scope — Plan, Canvas, Ship" },
+      { property: "og:title", content: "Eitri — Self-Healing Pipelines" },
       { property: "og:description", content: "Plan, canvas and scope your pipelines. Live deploys to the edge." },
     ],
   }),
@@ -24,7 +24,7 @@ function Nav() {
         <div className="glass rounded-full flex items-center justify-between px-5 py-2.5">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-md bg-gradient-to-br from-primary to-accent glow-primary" />
-            <span className="font-display font-semibold tracking-tight">scope</span>
+            <span className="font-display font-semibold tracking-tight">Eitri</span>
           </div>
           <nav className="hidden md:flex items-center gap-7 text-sm text-muted-foreground">
             <a href="#pipeline" className="hover:text-foreground transition">Pipeline</a>
@@ -68,7 +68,7 @@ function Hero() {
           transition={{ delay: 0.25, duration: 0.6 }}
           className="mt-6 max-w-xl text-lg text-muted-foreground"
         >
-          Scope turns your project plan into a living pipeline. Drag nodes, watch builds run, and deploy to the edge — all from a single canvas.
+          Eitri turns your project plan into a living pipeline. Drag nodes, watch builds run, and deploy to the edge — all from a single canvas.
         </motion.p>
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
@@ -163,7 +163,7 @@ function Footer() {
   return (
     <footer className="px-6 py-10 border-t border-border/60">
       <div className="mx-auto max-w-6xl flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-muted-foreground">
-        <span>© 2026 scope.dev — plan-canvas-scope</span>
+        <span>© 2026 eitri.dev — plan-canvas-scope</span>
         <span>made on the edge · workers @ 41ms p95</span>
       </div>
     </footer>

@@ -10,11 +10,11 @@ import (
 	"syscall"
 	"time"
 
-	"anvil/backend/api"
-	"anvil/backend/db"
-	"anvil/backend/services/pipeline"
-	"anvil/backend/services/webhook"
-	"anvil/backend/services/websocket"
+	"eitri/backend/api"
+	"eitri/backend/db"
+	"eitri/backend/services/pipeline"
+	"eitri/backend/services/webhook"
+	"eitri/backend/services/websocket"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"

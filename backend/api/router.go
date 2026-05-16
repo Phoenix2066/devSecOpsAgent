@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"time"
 
-	"anvil/backend/services/pipeline"
-	"anvil/backend/services/webhook"
-	"anvil/backend/services/websocket"
+	"eitri/backend/services/pipeline"
+	"eitri/backend/services/webhook"
+	"eitri/backend/services/websocket"
 )
 
 // Dependencies holds all handler dependencies

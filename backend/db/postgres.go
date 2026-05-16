@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"anvil/backend/services/pipeline"
-	"anvil/backend/services/webhook"
+	"eitri/backend/services/pipeline"
+	"eitri/backend/services/webhook"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )

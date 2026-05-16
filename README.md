@@ -1,6 +1,6 @@
-# Anvil: Self-Healing DevSecOps Multi-Agent Platform
+# Eitri: Self-Healing DevSecOps Multi-Agent Platform
 
-Anvil is a production-grade autonomous CI/CD recovery platform. When a deployment or build fails (e.g., due to a dependency mismatch, broken CI configuration, or runtime import failure), Anvil dynamically spawns an intelligent swarm of AI agents to investigate, formulate a repair plan, validate the fix in a persistent shadow environment, and automatically promote the verified fix via Pull Request.
+Eitri is a production-grade autonomous CI/CD recovery platform. When a deployment or build fails (e.g., due to a dependency mismatch, broken CI configuration, or runtime import failure), Eitri dynamically spawns an intelligent swarm of AI agents to investigate, formulate a repair plan, validate the fix in a persistent shadow environment, and automatically promote the verified fix via Pull Request.
 
 ## 🚀 Features
 
@@ -120,10 +120,10 @@ python scripts/create_test_repo_commit.py --token YOUR_PAT --repo owner/repo
 ```
 
 ### 📺 Watch it Live
-Once triggered, watch the **Anvil Dashboard** at `http://localhost:3000`. You will see:
+Once triggered, watch the **Eitri Dashboard** at `http://localhost:3000`. You will see:
 - A dynamic **ReactFlow Graph** mapping out the hierarchy of spawned agents (e.g., Orchestrator -> Log Analyzer & Dependency Inspector) connected via glowing, animated flow lines.
 - **Live Logs** streaming the thoughts, decisions, and actions of the Python Agent Swarm in real-time.
 - Automatic updates as the swarm investigates the log, queries memory, creates a shadow environment, iterates on the fix, and opens a Pull Request.
 
 ---
-*Anvil is built for the DevSecOps of the future — where pipelines don't just fail; they heal.*
+*Eitri is built for the DevSecOps of the future — where pipelines don't just fail; they heal.*

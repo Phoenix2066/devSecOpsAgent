@@ -179,7 +179,7 @@ class OrchestratorAgent(BaseAgent):
             # github_tool functions used as requested.
             commit_sha = await github_tool.commit_files(
                 base["github_token"], base["repo"], base["branch"], 
-                f"Anvil: Autonomous Repair (Iteration {iteration})", 
+                f"Eitri: Autonomous Repair (Iteration {iteration})", 
                 patches
             )
             
@@ -319,7 +319,7 @@ class OrchestratorAgent(BaseAgent):
         try:
             # 2. Open PR
             # In a real flow we'd use a unique branch name
-            repair_branch = f"anvil-repair-{pipeline_id[:8]}"
+            repair_branch = f"eitri-repair-{pipeline_id[:8]}"
             pr_url = await github_tool.open_pull_request(
                 base["github_token"], base["repo"], 
                 head=base["branch"], # Simplified: committed back to same branch for demo
@@ -396,4 +396,4 @@ class OrchestratorAgent(BaseAgent):
 ### Changes Made
 {summaries}
 
-This fix was automatically generated and verified by the Anvil Self-Healing Platform."""
+This fix was automatically generated and verified by the Eitri Self-Healing Platform."""

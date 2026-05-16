@@ -5,7 +5,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class Settings:
     fastapi_port: int = int(os.getenv("FASTAPI_PORT", "8001"))
-    database_url: str = os.getenv("DATABASE_URL", "postgres://anvil:anvil@localhost:5432/devsecops")
+    database_url: str = os.getenv("DATABASE_URL", "postgres://eitri:eitri@localhost:5432/devsecops")
     redis_url: str = os.getenv("REDIS_URL", "redis://localhost:6379")
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
     gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
@@ -14,7 +14,7 @@ class Settings:
     tavily_api_key: str = os.getenv("TAVILY_API_KEY", "")
     neo4j_uri: str = os.getenv("NEO4J_URI", "bolt://localhost:7687")
     neo4j_user: str = os.getenv("NEO4J_USER", "neo4j")
-    neo4j_password: str = os.getenv("NEO4J_PASSWORD", "anvilpassword")
+    neo4j_password: str = os.getenv("NEO4J_PASSWORD", "eitripassword")
     omium_api_key: str = os.getenv("OMIUM_API_KEY", "")
     github_token: str = os.getenv("GITHUB_TOKEN", "")
 
