@@ -105,13 +105,25 @@ Run these once after the infrastructure is up:
 
 ## 🧪 Triggering the Demo
 
-Push a deterministic failure to your repository to initiate the self-healing loop:
+There are two ways to trigger the self-healing loop:
 
+### Method 1: Local Mock Trigger (Recommended for UI Testing)
+You can artificially simulate a failed pipeline run without needing ngrok or a real GitHub repository. This will push a mock event directly into the Orchestrator queue, allowing you to watch the agent swarm and ReactFlow graph in real-time.
+```bash
+python scripts/trigger_repair.py "owner/repo"
+```
+
+### Method 2: Real GitHub Webhook
+If you've set up the webhook via ngrok, push a deterministic failure to your repository to initiate the real end-to-end flow:
 ```bash
 python scripts/create_test_repo_commit.py --token YOUR_PAT --repo owner/repo
 ```
 
-Watch the **Anvil Dashboard** at `http://localhost:3000` as the swarm investigates the log, queries memory, creates a shadow environment, iterates on the fix, and opens a Pull Request.
+### 📺 Watch it Live
+Once triggered, watch the **Anvil Dashboard** at `http://localhost:3000`. You will see:
+- A dynamic **ReactFlow Graph** mapping out the hierarchy of spawned agents (e.g., Orchestrator -> Log Analyzer & Dependency Inspector) connected via glowing, animated flow lines.
+- **Live Logs** streaming the thoughts, decisions, and actions of the Python Agent Swarm in real-time.
+- Automatic updates as the swarm investigates the log, queries memory, creates a shadow environment, iterates on the fix, and opens a Pull Request.
 
 ---
 *Anvil is built for the DevSecOps of the future — where pipelines don't just fail; they heal.*
