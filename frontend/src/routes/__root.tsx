@@ -55,12 +55,12 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           >
             Try again
           </button>
-          <a
-            href="/"
+          <Link
+            to="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
             Go home
-          </a>
+          </Link>
         </div>
       </div>
     </div>
@@ -113,18 +113,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 import { useEffect } from "react";
-import { socket } from "@/lib/socket";
 import { Toaster } from "@/components/ui/sonner";
+import "reactflow/dist/style.css";
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-
-  useEffect(() => {
-    socket.connect();
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

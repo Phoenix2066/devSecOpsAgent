@@ -1,28 +1,50 @@
 package pipeline
 
-type PipelineState string
-
+// PipelineStatus constants — must match Python agent status strings exactly
 const (
-	StatePending    PipelineState = "pending"
-	StateRunning    PipelineState = "running"
-	StateFailed     PipelineState = "failed"
-	StateHealed     PipelineState = "healed"
-	StatePromoted   PipelineState = "promoted"
-	StateRolledBack PipelineState = "rolled_back"
+	StatusPending    = "pending"
+	StatusRunning    = "running"
+	StatusFailed     = "failed"
+	StatusHealing    = "healing"
+	StatusValidating = "validating"
+	StatusPromoted   = "promoted"
+	StatusRolledBack = "rolled_back"
 )
 
-func CanTransition(from, to PipelineState) bool {
-	allowed := map[PipelineState][]PipelineState{
-		StatePending:  {StateRunning, StateFailed},
-		StateRunning:  {StateFailed, StateHealed, StatePromoted},
-		StateFailed:   {StateRunning, StateRolledBack},
-		StateHealed:   {StatePromoted, StateRolledBack},
-		StatePromoted: {},
+// TerminalStatuses are statuses where completed_at should be set
+var TerminalStatuses = map[string]bool{
+	StatusPromoted:   true,
+	StatusRolledBack: true,
+	StatusFailed:     true,
+}
+
+// ValidTransitions defines legal pipeline status transitions
+// From status → allowed next statuses
+var ValidTransitions = map[string][]string{
+	StatusPending:    {StatusRunning, StatusFailed},
+	StatusRunning:    {StatusHealing, StatusFailed},
+	StatusHealing:    {StatusValidating, StatusFailed, StatusRolledBack},
+	StatusValidating: {StatusPromoted, StatusHealing, StatusRolledBack},
+	StatusPromoted:   {},
+	StatusRolledBack: {},
+	StatusFailed:     {},
+}
+
+// IsValidTransition returns true if transitioning from → to is allowed
+func IsValidTransition(from, to string) bool {
+	allowed, ok := ValidTransitions[from]
+	if !ok {
+		return false
 	}
-	for _, candidate := range allowed[from] {
-		if candidate == to {
+	for _, a := range allowed {
+		if a == to {
 			return true
 		}
 	}
 	return false
+}
+
+// IsTerminal returns true if status is a terminal state
+func IsTerminal(status string) bool {
+	return TerminalStatuses[status]
 }

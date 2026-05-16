@@ -3,24 +3,30 @@ import { Terminal, ScrollText, AlertOctagon, Brain, X } from "lucide-react";
 import { getPipelineDetail, type LogLine } from "@/lib/mock-data";
 import { useLiveLogs } from "@/hooks/useLiveLogs";
 
-const levelColor: Record<LogLine["level"], string> = {
+const levelColor: Record<string, string> = {
   info:    "text-info",
   warn:    "text-warning",
   error:   "text-destructive",
   success: "text-primary",
   debug:   "text-muted-foreground",
+  memory:  "text-accent",
+  search:  "text-info",
 };
 
 export function BottomPanel({ pipelineId, onClose }: { pipelineId: string; onClose: () => void }) {
   const [active, setActive] = useState("logs");
-  const detail = getPipelineDetail(pipelineId);
+  const detail = getPipelineDetail(pipelineId) || { memory: [], problems: [], timeline: [], logs: [] };
   const { logs } = useLiveLogs(pipelineId);
+
+  const memoryHits = detail.memory || [];
+  const problems = detail.problems || [];
+  const timeline = detail.timeline || [];
 
   const tabs = [
     { id: "logs",     label: "Live Logs",       icon: Terminal,     count: undefined as number | undefined },
     { id: "timeline", label: "Repair Timeline", icon: ScrollText,   count: undefined },
-    { id: "memory",   label: "Memory Hits",     icon: Brain,        count: detail.memory.length || undefined },
-    { id: "problems", label: "Problems",        icon: AlertOctagon, count: detail.problems.length || undefined },
+    { id: "memory",   label: "Memory Hits",     icon: Brain,        count: memoryHits.length || undefined },
+    { id: "problems", label: "Problems",        icon: AlertOctagon, count: problems.length || undefined },
   ];
 
   return (
@@ -66,16 +72,22 @@ export function BottomPanel({ pipelineId, onClose }: { pipelineId: string; onClo
                 <span className="flex-1 text-foreground">{l.msg}</span>
               </div>
             ))}
-            <div className="flex items-center gap-2 py-1 text-muted-foreground">
-              <span className="h-2 w-2 rounded-full bg-primary pulse-dot" />
-              streaming…
-            </div>
+            {pipelineId ? (
+              <div className="flex items-center gap-2 py-1 text-muted-foreground">
+                <span className="h-2 w-2 rounded-full bg-primary pulse-dot" />
+                streaming…
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 py-1 text-muted-foreground">
+                Waiting for pipeline...
+              </div>
+            )}
           </div>
         )}
 
         {active === "timeline" && (
           <div className="space-y-2 p-4">
-            {detail.timeline.map((e, i) => (
+            {timeline.map((e, i) => (
               <div key={i} className="flex items-start gap-3 rounded-md border border-border bg-card p-3">
                 <div className="font-mono text-[11px] text-muted-foreground">iter {e.iter}</div>
                 <div className="flex-1">
@@ -95,10 +107,10 @@ export function BottomPanel({ pipelineId, onClose }: { pipelineId: string; onClo
 
         {active === "memory" && (
           <div className="space-y-2 p-4">
-            {detail.memory.length === 0 && (
+            {memoryHits.length === 0 && (
               <div className="font-sans text-[13px] text-muted-foreground">No memory hits for this pipeline.</div>
             )}
-            {detail.memory.map((m, i) => (
+            {memoryHits.map((m, i) => (
               <div key={i} className="rounded-md border border-border bg-card p-3">
                 <div className="flex items-center gap-2">
                   <span className="rounded bg-primary/15 px-2 py-0.5 font-mono text-[11px] text-primary">
@@ -117,11 +129,11 @@ export function BottomPanel({ pipelineId, onClose }: { pipelineId: string; onClo
 
         {active === "problems" && (
           <div className="p-4 font-sans text-[13px] text-muted-foreground">
-            {detail.problems.length === 0 ? (
+            {problems.length === 0 ? (
               <div>No problems reported. </div>
             ) : (
               <div className="space-y-1.5">
-                {detail.problems.map((p, i) => (
+                {problems.map((p, i) => (
                   <div key={i}>
                     <span className={p.level === "error" ? "text-destructive" : "text-warning"}>{p.level}</span>
                     {" · "}{p.agent}{" · "}{p.msg}

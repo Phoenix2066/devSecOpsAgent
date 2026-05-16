@@ -1,0 +1,11 @@
+# Shadow environments are created dynamically by the platform.
+# This file documents the shadow container spec for reference only.
+# ShadowEnvironment class in agents/shadow/environment.py manages these directly
+# via the Docker SDK — they are NOT started via compose.
+
+# Shadow container spec (for documentation):
+#   image: python:3.11-slim (default) or detected from repo
+#   network: shadow-{pipeline_id} (created dynamically)
+#   mounts: /tmp/shadow/{pipeline_id} → /workspace
+#   working_dir: /workspace
+#   auto_remove: false (persists across iterations)

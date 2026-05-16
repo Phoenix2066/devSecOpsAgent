@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
+import { createProject } from "@/lib/api";
+
 interface CreateProjectModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -21,10 +23,8 @@ interface CreateProjectModalProps {
 export function CreateProjectModal({ open, onOpenChange }: CreateProjectModalProps) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    repoLink: "",
-    appId: "",
-    userId: "",
-    privateKey: "",
+    repoName: "",
+    githubToken: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,30 +32,32 @@ export function CreateProjectModal({ open, onOpenChange }: CreateProjectModalPro
     setLoading(true);
 
     // Validate fields
-    if (!formData.repoLink || !formData.appId || !formData.userId || !formData.privateKey) {
+    if (!formData.repoName || !formData.githubToken) {
       toast.error("Please fill in all fields");
       setLoading(false);
       return;
     }
 
     try {
-      // Logic for creating project would go here
-      console.log("Creating project with data:", formData);
+      // Extract owner/repo if full URL is provided
+      let repo = formData.repoName;
+      if (repo.includes("github.com/")) {
+        repo = repo.split("github.com/")[1].split("/").slice(0, 2).join("/");
+      }
       
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const data = await createProject(repo, formData.githubToken);
+      console.log("Created project:", data);
 
-      toast.success("Project workflow replicated successfully!");
+      toast.success("Project added successfully!");
       onOpenChange(false);
       // Reset form
       setFormData({
-        repoLink: "",
-        appId: "",
-        userId: "",
-        privateKey: "",
+        repoName: "",
+        githubToken: "",
       });
-    } catch (error) {
-      toast.error("Failed to create project");
+    } catch (error: any) {
+      console.error("Project creation error:", error);
+      toast.error(`Failed to add repository: ${error.message || "Unknown error"}`);
     } finally {
       setLoading(false);
     }
@@ -65,61 +67,39 @@ export function CreateProjectModal({ open, onOpenChange }: CreateProjectModalPro
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] bg-card border-border">
         <DialogHeader>
-          <DialogTitle className="text-foreground">Replicate Workflow</DialogTitle>
+          <DialogTitle className="text-foreground">Add Repository</DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            Configure a new GitHub project to enable autonomous self-healing.
+            Connect a GitHub repository to enable autonomous healing.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="repo" className="text-muted-foreground uppercase text-[10px] tracking-wider">
-              GitHub Repo Link
+              GitHub Repo (owner/repo)
             </Label>
             <Input
               id="repo"
-              placeholder="https://github.com/owner/repo"
-              value={formData.repoLink}
-              onChange={(e) => setFormData({ ...formData, repoLink: e.target.value })}
+              placeholder="e.g. google/ascent"
+              value={formData.repoName}
+              onChange={(e) => setFormData({ ...formData, repoName: e.target.value })}
               className="bg-background border-border"
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="appId" className="text-muted-foreground uppercase text-[10px] tracking-wider">
-                GitHub App ID
-              </Label>
-              <Input
-                id="appId"
-                placeholder="123456"
-                value={formData.appId}
-                onChange={(e) => setFormData({ ...formData, appId: e.target.value })}
-                className="bg-background border-border"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="userId" className="text-muted-foreground uppercase text-[10px] tracking-wider">
-                GitHub User ID
-              </Label>
-              <Input
-                id="userId"
-                placeholder="owner-name"
-                value={formData.userId}
-                onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
-                className="bg-background border-border"
-              />
-            </div>
-          </div>
           <div className="grid gap-2">
-            <Label htmlFor="privateKey" className="text-muted-foreground uppercase text-[10px] tracking-wider">
-              GitHub Private Key
+            <Label htmlFor="token" className="text-muted-foreground uppercase text-[10px] tracking-wider">
+              GitHub Personal Access Token
             </Label>
-            <Textarea
-              id="privateKey"
-              placeholder="-----BEGIN RSA PRIVATE KEY-----..."
-              className="min-h-[120px] font-mono text-[12px] bg-background border-border"
-              value={formData.privateKey}
-              onChange={(e) => setFormData({ ...formData, privateKey: e.target.value })}
+            <Input
+              id="token"
+              type="password"
+              placeholder="ghp_xxxxxxxxxxxx"
+              value={formData.githubToken}
+              onChange={(e) => setFormData({ ...formData, githubToken: e.target.value })}
+              className="bg-background border-border"
             />
+            <p className="text-[10px] text-muted-foreground">
+              Token needs 'repo' and 'admin:repo_hook' scopes.
+            </p>
           </div>
           <DialogFooter className="pt-4">
             <Button
@@ -131,7 +111,7 @@ export function CreateProjectModal({ open, onOpenChange }: CreateProjectModalPro
               Cancel
             </Button>
             <Button type="submit" disabled={loading} className="bg-primary text-primary-foreground hover:opacity-90">
-              {loading ? "Replicating..." : "Start Replication"}
+              {loading ? "Adding..." : "Add Repository"}
             </Button>
           </DialogFooter>
         </form>

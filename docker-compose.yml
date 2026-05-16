@@ -1,30 +1,69 @@
 services:
+
   postgres:
-    image: ankane/pgvector:latest
+    image: pgvector/pgvector:pg16
+    container_name: devsecops-postgres
     environment:
-      POSTGRES_USER: anvil
-      POSTGRES_PASSWORD: anvil
+      POSTGRES_USER: devsecops
+      POSTGRES_PASSWORD: devsecops
       POSTGRES_DB: devsecops
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - devsecops-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devsecops -d devsecops"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   neo4j:
     image: neo4j:5
+    container_name: devsecops-neo4j
     environment:
-      NEO4J_AUTH: neo4j/anvilpassword
+      NEO4J_AUTH: neo4j/devsecops123
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_security_procedures_unrestricted: apoc.*
+      NEO4J_dbms_memory_heap_initial__size: 512m
+      NEO4J_dbms_memory_heap_max__size: 1G
     ports:
-      - "7474:7474"
-      - "7687:7687"
+      - "7474:7474"   # browser UI
+      - "7687:7687"   # bolt protocol
     volumes:
-      - neo4j_data:/data
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+    networks:
+      - devsecops-network
+    healthcheck:
+      test: ["CMD", "neo4j", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: devsecops-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - devsecops-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
-  postgres_data:
-  neo4j_data:
+  postgres-data:
+  neo4j-data:
+  neo4j-logs:
+  redis-data:
+
+networks:
+  devsecops-network:
+    driver: bridge

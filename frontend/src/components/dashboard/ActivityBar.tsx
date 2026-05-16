@@ -2,11 +2,6 @@ import { GitBranch, Boxes, Brain, Activity, Settings, Users, Search } from "luci
 
 const items = [
   { icon: GitBranch, label: "Pipelines", active: true },
-  { icon: Boxes, label: "Shadow Envs" },
-  { icon: Brain, label: "Memory" },
-  { icon: Activity, label: "Telemetry" },
-  { icon: Search, label: "Search" },
-  { icon: Users, label: "Agents" },
 ];
 
 export function ActivityBar() {

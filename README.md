@@ -1,101 +1,117 @@
 # Anvil: Self-Healing DevSecOps Multi-Agent Platform
 
-Anvil is a prototype platform that demonstrates autonomous CI/CD recovery. When a deployment or build fails (e.g., due to a dependency mismatch, broken CI configuration, or runtime import failure), Anvil dynamically spawns an intelligent swarm of AI agents to investigate, formulate a repair plan, test the fix in a shadow environment, and automatically push a pull request or merge the fix.
+Anvil is a production-grade autonomous CI/CD recovery platform. When a deployment or build fails (e.g., due to a dependency mismatch, broken CI configuration, or runtime import failure), Anvil dynamically spawns an intelligent swarm of AI agents to investigate, formulate a repair plan, validate the fix in a persistent shadow environment, and automatically promote the verified fix via Pull Request.
 
-## Features
+## 🚀 Features
 
-- **Autonomous Repair Pipeline**: Detects failures via GitHub webhooks and auto-resolves issues without human intervention.
-- **Multi-Agent Architecture**: 
-  - **Orchestrator Agent**: Manages the workflow graph and delegates tasks.
-  - **Investigation Agents**: Specialized workers for log analysis, dependency inspection, code analysis, and config analysis.
-  - **Coordinator Agent**: Aggregates findings and decides on the most confident repair strategy.
-  - **Repair Agents**: Executes file changes (e.g., fixing imports, YAML manifests, Dockerfiles).
-  - **Memory Agent**: Leverages `pgvector` and Neo4j to store past incidents and reuse known fixes.
-- **Shadow Environment Validation**: Iterative feedback loop that compiles and tests the agents' proposed fixes in isolated Docker containers before promotion.
-- **Live Dashboard**: A Next.js frontend featuring ReactFlow to visualize the agent spawn graph and live streaming logs of the repair iterations.
+- **Autonomous Repair Pipeline**: Full lifecycle recovery from webhook trigger to verified PR.
+- **Multi-Agent Swarm**: 
+  - **Orchestrator**: Central state machine managing the hierarchical execution tree.
+  - **Coordinator**: Findings aggregator and repair strategist.
+  - **Memory Agent**: Hybrid `pgvector` + Neo4j long-term memory for fix reuse.
+  - **Specialized Workers**: Log Analysis, Dependency Inspection, Web Research, and Repair Agents.
+- **Shadow Environment Validation**: Isolated Docker sandboxes for iterative build/test verification.
+- **Real-Time Observability**: Next.js dashboard featuring live logs and ReactFlow agent graphs.
+- **Distributed Coordination**: Go-based WebSocket hub and Python agent swarm synchronized via Redis.
 
-## Tech Stack
+## 🛠 Tech Stack
 
-- **Backend**: Go (Services, Webhooks, Pipeline State, WebSocket Hub)
-- **Agent Runtime**: Python (FastAPI, Langchain/Native LLM integrations)
-- **Frontend**: Next.js, ReactFlow, Tailwind CSS, shadcn/ui
-- **Infrastructure**: Docker, PostgreSQL (with pgvector), Redis, Neo4j
-- **AI Models**: Gemini (Reasoning/Code Analysis), OpenAI (Embeddings/Repair)
+- **Backend**: Go 1.22+ (Services, Webhooks, WebSocket Hub, pgx/v5)
+- **Agent Runtime**: Python 3.10+ (FastAPI, asyncio, Dynamic Module Spawning)
+- **Frontend**: React (Vite, @tanstack/react-router), ReactFlow, Tailwind CSS
+- **Infrastructure**: PostgreSQL 16 (pgvector), Neo4j 5 (APOC), Redis 7
+- **AI Models**: Gemini 1.5 Pro (Investigation), GPT-4o (Repair), OpenAI Embeddings
 
-## Setup and Quickstart
+## 📋 Prerequisites
 
-### Prerequisites
+- **Docker Desktop** (running)
+- **Go 1.22+**
+- **Python 3.10+**
+- **Node.js 18+**
+- **OpenAI API Key** (for embeddings and repair)
+- **Gemini API Key** (for analysis)
+- **GitHub PAT** (with repo scopes)
 
-- Docker Desktop
-- Go 1.21+
-- Python 3.10+
-- Node.js / npm
+## 🏗 Setup & Startup
 
 ### 1. Environment Configuration
 
-Copy the provided `.env.example` to `.env` in the root, `backend/`, `agents/`, and `frontend/` directories, and fill in your API keys.
+1. Create a root `.env` file (see `.env.example`):
+   ```bash
+   cp .env.example .env
+   # Fill in your OPENAI_API_KEY, GEMINI_API_KEY, and GITHUB_TOKEN
+   ```
+2. The Go backend and Python agents will automatically read their respective configurations.
 
-*You will need a Supabase project, Gemini/OpenAI API keys, and a GitHub App for full functionality.*
-
-### 2. Start Infrastructure
-
-Start the databases (Postgres, Redis, Neo4j) using Docker Compose:
+### 2. Launch Infrastructure
 
 ```bash
+# Terminal 1
 docker compose up -d
+# Wait ~30s for health checks to pass
 ```
 
-### 3. Start the Go Backend
-
-The Go backend handles webhooks, state management, and WebSocket connections.
+### 3. Start Backend Services
 
 ```bash
+# Terminal 2 - Go Backend
 cd backend
-go mod tidy
-go run .
-```
+go run main.go
 
-### 4. Start the Python Agent API
-
-The Python runtime executes the multi-agent orchestration.
-
-```bash
+# Terminal 3 - Python Agent Runtime
 cd agents
-python -m venv .venv
-
-# On Windows:
-.venv\Scripts\activate
-# On Mac/Linux:
-# source .venv/bin/activate
-
+# Activate your virtual environment
 pip install -r requirements.txt
-uvicorn main:app --reload --port 8001
+python main.py
 ```
 
-### 5. Start the Frontend Dashboard
-
-The frontend visualizes the pipeline recovery in real-time.
+### 4. Start Frontend
 
 ```bash
+# Terminal 4
 cd frontend
 npm install
-npm run dev --port 3000
+npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+### 5. Setup Webhook Tunnel (Local Only)
 
-## How to Demo
+```bash
+# Terminal 5
+ngrok http 8080
+```
 
-1. **Replicate Workflow**: Log into the dashboard and click the **+ (Plus)** button next to the Explorer sidebar. Add your GitHub repository details, App ID, and Private Key.
-2. **Trigger a Failure**: Push a commit to your linked repository with an intentional error (e.g., a dependency conflict in `requirements.txt`).
-3. **Watch it Heal**: The webhook will trigger Anvil. In the dashboard, you will see the Orchestrator spawn investigation agents, query memory, execute a fix in the shadow environment, and ultimately open a Pull Request with the working code.
+## 🏁 Initializing for Demo
 
-## Project Structure
+Run these once after the infrastructure is up:
 
-- `/backend`: Go application managing infrastructure, data, and WebSocket streaming.
-- `/agents`: Python FastAPI application housing the BaseAgent abstractions, Orchestrator, Memory, Coordinator, and Dynamic Worker Agents.
-- `/frontend`: Next.js React application providing the real-time observability dashboard.
-- `docker-compose.yml`: Local database infrastructure setup.
+1. **Seed Memory**: Prime the AI with known incidents to demonstrate instant reuse.
+   ```bash
+   python scripts/seed_memory.py
+   ```
 
-## Note
-This is a prototype meant to showcase the "North Star" vision of an LLM-driven, self-healing DevSecOps loop.
+2. **Register Webhook**: Connect your target GitHub repository.
+   ```bash
+   python scripts/register_webhook.py \
+     --token YOUR_PAT \
+     --repo owner/repo \
+     --url https://YOUR_NGROK_URL/webhook/github
+   ```
+
+3. **Verify Health**:
+   ```bash
+   bash scripts/verify.sh
+   ```
+
+## 🧪 Triggering the Demo
+
+Push a deterministic failure to your repository to initiate the self-healing loop:
+
+```bash
+python scripts/create_test_repo_commit.py --token YOUR_PAT --repo owner/repo
+```
+
+Watch the **Anvil Dashboard** at `http://localhost:3000` as the swarm investigates the log, queries memory, creates a shadow environment, iterates on the fix, and opens a Pull Request.
+
+---
+*Anvil is built for the DevSecOps of the future — where pipelines don't just fail; they heal.*

@@ -1,29 +1,47 @@
+from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Literal
-from uuid import uuid4
+from typing import Optional, List
 
-from pydantic import BaseModel, Field
+class AgentStatus(Enum):
+    SPAWNED = "spawned"
+    RUNNING = "running"
+    COMPLETE = "complete"
+    FAILED = "failed"
 
+class AgentType(Enum):
+    # Fixed agents
+    ORCHESTRATOR = "orchestrator"
+    COORDINATOR = "coordinator"
+    MEMORY = "memory"
+    MONITOR = "monitor"
+    # Dynamic workers
+    LOG_ANALYZER = "log_analyzer"
+    DEPENDENCY_INSPECTOR = "dependency_inspector"
+    WEB_SEARCH = "web_search"
+    CONFIG_ANALYZER = "config_analyzer"
+    CODE_ANALYZER = "code_analyzer"
+    REPAIR_DOCKER = "repair_docker"
+    REPAIR_YAML = "repair_yaml"
+    REPAIR_IMPORTS = "repair_imports"
 
-class AgentStatus(str, Enum):
-    spawned = "spawned"
-    running = "running"
-    complete = "complete"
-    failed = "failed"
-
-
-class AgentTask(BaseModel):
-    task_id: str = Field(default_factory=lambda: str(uuid4()))
-    pipeline_id: str
-    agent_type: str
-    payload: dict[str, Any] = Field(default_factory=dict)
-
-
-class AgentResult(BaseModel):
+@dataclass
+class AgentTask:
     task_id: str
+    pipeline_id: str
+    task_type: str           # matches AgentType.value
+    payload: dict
+    iteration: int = 1
+    parent_agent_id: Optional[str] = None
+
+@dataclass
+class AgentResult:
+    task_id: str
+    agent_id: str
     agent_type: str
-    status: Literal["complete", "failed"]
-    findings: dict[str, Any] = Field(default_factory=dict)
-    confidence: float = 0.0
-    suggested_repairs: list[str] = Field(default_factory=list)
-    error: str | None = None
+    pipeline_id: str
+    status: AgentStatus
+    findings: dict
+    confidence: float        # 0.0–1.0
+    suggested_repairs: List[str]
+    error: Optional[str] = None
+    duration_seconds: float = 0.0

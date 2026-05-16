@@ -1,9 +1,26 @@
+import asyncio
+import logging
 from base.agent import BaseAgent
-from base.types import AgentResult
-from core.monitor.health import check_container_health
 
+logger = logging.getLogger(__name__)
 
 class MonitoringAgent(BaseAgent):
-    async def execute(self) -> AgentResult:
-        check = await check_container_health(self.task.payload.get("container_id", ""))
-        return AgentResult(task_id=self.task.task_id, agent_type="monitor", status="complete", findings={"checks": [check]}, confidence=1.0 if check["passed"] else 0.0)
+    """
+    Fixed agent. Periodically checks health of shadow environments
+    and active workers.
+    """
+
+    async def execute(self) -> None:
+        """Main event loop for monitoring."""
+        logger.info("MonitoringAgent starting...")
+        while True:
+            try:
+                # Placeholder for actual monitoring logic
+                # For now just sleep
+                await asyncio.sleep(60)
+            except asyncio.CancelledError:
+                logger.info("MonitoringAgent shutting down...")
+                break
+            except Exception as e:
+                logger.error(f"Error in MonitoringAgent: {e}", exc_info=True)
+                await asyncio.sleep(10)

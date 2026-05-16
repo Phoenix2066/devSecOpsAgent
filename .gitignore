@@ -6,6 +6,8 @@ stuff.txt
 .env
 .env.*
 !.env.example
+agents/.env
+backend/.env
 
 # Logs
 *.log

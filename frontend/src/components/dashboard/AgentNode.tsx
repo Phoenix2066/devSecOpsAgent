@@ -20,8 +20,9 @@ const STATUS_STYLES: Record<AgentStatus, { ring: string; dot: string; label: str
 };
 
 export function AgentNode({ data }: { data: AgentNodeData }) {
-  const Icon = ICONS[data.type];
-  const s = STATUS_STYLES[data.status];
+  if (!data) return null;
+  const Icon = ICONS[data.type as AgentType] || Cpu;
+  const s = STATUS_STYLES[data.status as AgentStatus] || STATUS_STYLES.spawned;
   return (
     <div className={`w-[210px] rounded-md border bg-card text-card-foreground ${s.ring} transition-all`}>
       <Handle type="target" position={Position.Top} className="!h-1.5 !w-1.5 !border-0 !bg-border" />
